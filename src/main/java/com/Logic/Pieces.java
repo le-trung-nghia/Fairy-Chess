@@ -48,4 +48,18 @@ public class Pieces {
         }
         return null;
     }
+    
+    public void movePiece(int fromRow, int fromCol, int toRow, int toCol) {
+        if (fromRow >= 0 && fromRow < 8 && fromCol >= 0 && fromCol < 8 &&
+            toRow >= 0 && toRow < 8 && toCol >= 0 && toCol < 8) {
+            
+            Piece piece = board[fromRow][fromCol];
+            if (piece != null) {
+                // Move piece to new position
+                board[toRow][toCol] = piece;
+                // Clear old position
+                board[fromRow][fromCol] = null;
+            }
+        }
+    }
 }
