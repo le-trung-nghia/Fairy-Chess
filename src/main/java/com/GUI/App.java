@@ -103,6 +103,7 @@ public class App extends Application {
 	    }
 	}
 	
+  // TODO: Change this after correct implementation
 	private void movePiece(int fromRow, int fromCol, int toRow, int toCol) {
 	    // Check if destination is occupied
 	    if (logic.getSquare(toRow, toCol) != null) {

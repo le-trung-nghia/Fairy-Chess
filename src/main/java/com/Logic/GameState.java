@@ -43,7 +43,6 @@ public class GameState {
     // move a piece on the board to another location
     // TODO: implement this
     public void move(int rowSrc, int colSrc, int rowDst, int colDst) {
-        // For now, just call displace since we haven't implemented piece rules yet
         displace(rowSrc, colSrc, rowDst, colDst);
     }
 
