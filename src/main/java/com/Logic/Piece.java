@@ -1,58 +1,58 @@
 package com.Logic;
 
-// A piece in the game
+// Implementation of a piece
 public abstract class Piece {
-    public enum Color {
-        BLACK,
-        WHITE
-    }
+    // current location and color is tracked automatically to avoid boilerplate
+    protected Color color;
+    protected Position position;
 
-    private Color color;
-    // current location is tracked automatically to avoid boilerplate
-    private int row;
-    private int col;
-
-    public Piece(Color color, int row, int col) {
+    Piece(Color color, Position position) {
         this.color = color;
-        this.row = row;
-        this.col = col;
+        this.position = position;
     }
 
-    // Getters for color and position
-    public Color getColor() {
-        return color;
-    }
-    
-    public int getRow() {
-        return row;
-    }
-    
-    public int getCol() {
-        return col;
+    // called by GameState when this piece is moved
+    final void move(Position to) {
+        this.position = to;
     }
 
-    // called by GameState to update the position of this piece
-    final public void updatePosition(int row, int col) {
-        this.row = row;
-        this.col = col;
+    // called by GameState when this piece is displaced
+    final void displace(GameState state, Position to) {
+        this.position = to;
+        onDisplace(state);
     }
-    
-    public abstract String getImageFileName();
+
+    // called by GameState to change the color of this piece
+    final void changeColor(GameState state, Color color) {
+        Color previousColor = this.color;
+        this.color = color;
+        if (color == previousColor.oppositeColor()) {
+            onColorChange(state);
+        }
+    }
+
+    // return the path to the icon for the piece
+    protected abstract String icon();
+
     // user commands this piece to "move" to a square to the board
-    public abstract void move(GameState state, int row, int col);
+    protected abstract void onMoveCommand(GameState state, Position to);
 
     // get the squares this piece can move to
-    // returns a 2D array of Strings that are filenames of images that should be overlaid on the movable squares
-    // array can contain nulls to indicate that the corresponding square cannot be moved to
-    public abstract String[][] getMovableSquares();
+    // returns a 2D array of Strings that are filenames of images that should be
+    // overlaid on the movable squares
+    // array can contain nulls to indicate that the corresponding square cannot be
+    // moved to
+    protected abstract String[][] getMovableSquares(GameState state);
 
-    // called when this piece is displaced (moved adversarially) by another piece
-    // the previous location is passed to this function
-    public abstract void onDisplace(int prevRow, int prevCol);
+    // called when this piece is displaced by another piece
+    protected void onDisplace(GameState state) {
+    }
 
     // called when this piece's color is changed
-    public abstract void onColorChange();
+    protected void onColorChange(GameState state) {
+    }
 
     // called when this piece is captured
-    public abstract void onCaptured();
+    protected void onCapture(GameState state) {
+    }
 }
