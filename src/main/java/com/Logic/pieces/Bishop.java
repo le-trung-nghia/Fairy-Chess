@@ -9,7 +9,7 @@ import com.Logic.Position;
 import com.Logic.Vector;
  
 public class Bishop extends Piece {
-    private static final Direction[] DIRECTIONS = {
+    private static final Direction[] Directions = {
         Direction.NORTHEAST, Direction.NORTHWEST,
         Direction.SOUTHEAST, Direction.SOUTHWEST
     };
@@ -39,7 +39,7 @@ public class Bishop extends Piece {
     protected String[][] getMovableSquares(GameState state) {
         String[][] moves = new String[8][8];
  
-        for (Direction d : DIRECTIONS) {
+        for (Direction d : Directions) {
             Vector step = d.unitVector();
             Vector newPos = position.toVector().add(step);
  
