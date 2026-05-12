@@ -1,5 +1,6 @@
 package com.Logic.pieces;
 
+import com.Logic.BoardPiece
 import com.Logic.Color;
 import com.Logic.Direction;
 import com.Logic.GameState;
