@@ -2,7 +2,7 @@
 target/
 
 # IDEA folder
-.idea
+.idea/
 
 # Eclipse specific files
 .settings/
