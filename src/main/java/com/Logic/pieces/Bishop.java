@@ -44,7 +44,7 @@ public class Bishop extends Piece {
             Vector newPos = position.toVector().add(step);
  
             while (newPos.isInBounds()) {
-                Position pos = cursor.toPosition();
+                Position pos = newPos.toPosition();
                 BoardPiece curr = state.getSquare(pos);
  
                 if (curr == null) {
