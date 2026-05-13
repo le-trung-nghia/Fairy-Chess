@@ -1,13 +1,14 @@
 package com.Logic;
 
-import com.Logic.pieces.Pawn;
-import com.Logic.pieces.Rook;
-import com.Logic.pieces.Knight;
-import com.Logic.pieces.Bishop;
-import com.Logic.pieces.Queen;
-import com.Logic.pieces.King;
 import java.util.ArrayList;
 import java.util.Objects;
+
+import com.Logic.BasePieces.Bishop;
+import com.Logic.BasePieces.King;
+import com.Logic.BasePieces.Knight;
+import com.Logic.BasePieces.Pawn;
+import com.Logic.BasePieces.Queen;
+import com.Logic.BasePieces.Rook;
 
 // The entire state of the game at one point in the match
 public class GameState {

@@ -1,4 +1,4 @@
-package com.Logic.pieces;
+package com.Logic.BasePieces;
 
 import com.Logic.BoardPiece;
 import com.Logic.Color;
@@ -6,14 +6,16 @@ import com.Logic.Direction;
 import com.Logic.GameState;
 import com.Logic.Piece;
 import com.Logic.Position;
-import com.Logic.Vector;
- 
+import com.Logic.BoardRegion.Ray;
+
+import one.util.streamex.StreamEx;
+
 public class Bishop extends Piece {
     private static final Direction[] Directions = {
-        Direction.NORTHEAST, Direction.NORTHWEST,
-        Direction.SOUTHEAST, Direction.SOUTHWEST
+            Direction.NORTHEAST, Direction.NORTHWEST,
+            Direction.SOUTHEAST, Direction.SOUTHWEST
     };
-    
+
     public Bishop(Color color, Position position) {
         super(color, position);
     }
@@ -25,28 +27,22 @@ public class Bishop extends Piece {
 
     @Override
     protected void onMoveCommand(GameState state, Position to) {
-        String[][] movable = getMovableSquares(state);
-        if (movable[to.row()][to.col()] != null) {
-            if (state.hasEnemy(to, color)) {
-                state.capture(to);
-            }
-            state.move(position, to);
-            state.passControl();
+        if (state.hasEnemy(to, color)) {
+            state.capture(to);
         }
+        state.move(position, to);
+        state.passControl();
     }
 
     @Override
     protected String[][] getMovableSquares(GameState state) {
         String[][] moves = new String[8][8];
- 
+
         for (Direction d : Directions) {
-            Vector step = d.unitVector();
-            Vector newPos = position.toVector().add(step);
- 
-            while (newPos.isInBounds()) {
-                Position pos = newPos.toPosition();
+            for (Position pos : (Iterable<Position>) () -> StreamEx.of(new Ray(position, d).iterator()).skip(1)
+                    .iterator()) {
                 BoardPiece curr = state.getSquare(pos);
- 
+
                 if (curr == null) {
                     moves[pos.row()][pos.col()] = ".png";
                 } else {
@@ -55,11 +51,9 @@ public class Bishop extends Piece {
                     }
                     break;
                 }
- 
-                newPos = newPos.add(step);
             }
         }
- 
+
         return moves;
     }
 }

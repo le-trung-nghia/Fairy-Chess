@@ -1,4 +1,4 @@
-package com.Logic.pieces;
+package com.Logic.BasePieces;
 
 import com.Logic.Color;
 import com.Logic.GameState;
