@@ -1,8 +1,7 @@
-package com.Logic.pieces;
+package com.Logic.BasePieces;
 
 import com.Logic.BoardPiece;
 import com.Logic.Color;
-import com.Logic.Direction;
 import com.Logic.GameState;
 import com.Logic.Piece;
 import com.Logic.Position;
@@ -10,12 +9,12 @@ import com.Logic.Vector;
 
 public class Knight extends Piece {
     private static final Vector[] jumps = {
-        new Vector(-2, -1), new Vector(-2,  1),
-        new Vector(-1, -2), new Vector(-1,  2),
-        new Vector( 1, -2), new Vector( 1,  2),
-        new Vector( 2, -1), new Vector( 2,  1)
-    }; 
-    
+            new Vector(-2, -1), new Vector(-2, 1),
+            new Vector(-1, -2), new Vector(-1, 2),
+            new Vector(1, -2), new Vector(1, 2),
+            new Vector(2, -1), new Vector(2, 1)
+    };
+
     public Knight(Color color, Position position) {
         super(color, position);
     }
@@ -27,14 +26,11 @@ public class Knight extends Piece {
 
     @Override
     protected void onMoveCommand(GameState state, Position to) {
-       String[][] movable = getMovableSquares(state);
-        if (movable[to.row()][to.col()] != null) {
-            if (state.hasEnemy(to, color)) {
-                state.capture(to);
-            }
-            state.move(position, to);
-            state.passControl();
+        if (state.hasEnemy(to, color)) {
+            state.capture(to);
         }
+        state.move(position, to);
+        state.passControl();
     }
 
     @Override
@@ -43,9 +39,9 @@ public class Knight extends Piece {
 
         for (Vector j : jumps) {
             Vector newPos = position.toVector().add(j);
-            
+
             if (newPos.isInBounds()) {
-                Position pos = target.toPosition();
+                Position pos = newPos.toPosition();
                 BoardPiece curr = state.getSquare(pos);
                 if (curr == null) {
                     moves[pos.row()][pos.col()] = ".png";
@@ -54,7 +50,7 @@ public class Knight extends Piece {
                 }
             }
         }
- 
+
         return moves;
     }
 }

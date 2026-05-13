@@ -1,6 +1,5 @@
-package com.Logic.pieces;
+package com.Logic.BasePieces;
 
-import com.Logic.BoardPiece;
 import com.Logic.Color;
 import com.Logic.Direction;
 import com.Logic.GameState;
@@ -10,7 +9,7 @@ import com.Logic.Vector;
 
 public class Pawn extends Piece {
     private boolean hasMoved = false;
-    
+
     public Pawn(Color color, Position position) {
         super(color, position);
     }
@@ -22,15 +21,12 @@ public class Pawn extends Piece {
 
     @Override
     protected void onMoveCommand(GameState state, Position to) {
-        String[][] movable = getMovableSquares(state);
-        if (movable[to.row()][to.col()] != null) {
-            if (state.hasEnemy(to, color)) {
-                state.capture(to);
-            }
-            state.move(position, to);
-            hasMoved = true;
-            state.passControl();
+        if (state.hasEnemy(to, color)) {
+            state.capture(to);
         }
+        state.move(position, to);
+        hasMoved = true;
+        state.passControl();
     }
 
     @Override
@@ -39,24 +35,28 @@ public class Pawn extends Piece {
         Direction forward = color.forwardDirection();
         Vector fwd = forward.unitVector();
 
-        //One step forward
+        // One step forward
         Position oneStep = position.add(fwd);
         if (state.getSquare(oneStep) == null) {
             moves[oneStep.row()][oneStep.col()] = ".png";
 
-            //Two steps forward
-            if(!hasMoved) {
+            // Two steps forward
+            if (!hasMoved) {
                 Position twoSteps = position.add(fwd.mul(2));
-                if (state.getSquare(twoStep) == null) {
+                if (state.getSquare(twoSteps) == null) {
                     moves[twoSteps.row()][twoSteps.col()] = ".png";
                 }
             }
         }
 
-        //Captures
-        for (Direction diag: new Direction[]{forward.skewLeft(), forward.skewRight()}) {
-            Position capturePos = position,add(diag.unitVector());
-            if (state.hasEnemy(capturePos, color) {
+        // Captures
+        for (Direction diag : new Direction[] { forward.skewLeft(), forward.skewRight() }) {
+            Position capturePos = position.add(diag.unitVector());
+            if (state.hasEnemy(capturePos, color)) {
                 moves[capturePos.row()][capturePos.col()] = ".png";
+            }
+        }
+
+        return moves;
     }
 }

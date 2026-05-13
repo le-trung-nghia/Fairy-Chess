@@ -1,16 +1,18 @@
-package com.Logic.pieces;
+package com.Logic.BasePieces;
 
-import com.Logic.BoardPiece
+import com.Logic.BoardPiece;
 import com.Logic.Color;
 import com.Logic.Direction;
 import com.Logic.GameState;
 import com.Logic.Piece;
 import com.Logic.Position;
-import com.Logic.Vector;
+import com.Logic.BoardRegion.Ray;
+
+import one.util.streamex.StreamEx;
 
 public class Rook extends Piece {
-    private static final Direction[] Directions = {Direction.NORTH, Direction.SOUTH, Direction.EAST, Direction.WEST};
-    
+    private static final Direction[] Directions = { Direction.NORTH, Direction.SOUTH, Direction.EAST, Direction.WEST };
+
     public Rook(Color color, Position position) {
         super(color, position);
     }
@@ -22,13 +24,11 @@ public class Rook extends Piece {
 
     @Override
     protected void onMoveCommand(GameState state, Position to) {
-        String[][] movable = getMovableSquares(state);
-        if (movable[to.row()][to.col()] != null) {
-            if (state.hasEnemy(to, color)) {
-                state.capture(to);
-            }
-            state.move(position, to);
-            state.passControl();
+        if (state.hasEnemy(to, color)) {
+            state.capture(to);
+        }
+        state.move(position, to);
+        state.passControl();
     }
 
     @Override
@@ -36,24 +36,18 @@ public class Rook extends Piece {
         String[][] moves = new String[8][8];
 
         for (Direction d : Directions) {
-            Vector step = d.unitVector();
-            Vector newPos = position.toVector().add(step);
-
-            while (newPos.isInBounds()) {
-                Position pos = newPos.toPosition();
+            for (Position pos : (Iterable<Position>) () -> StreamEx.of(new Ray(position, d).iterator()).skip(1)
+                    .iterator()) {
                 BoardPiece curr = state.getSquare(pos);
 
                 if (curr == null) {
                     moves[pos.row()][pos.col()] = "greensquare.png";
-                }
-                else {
+                } else {
                     if (curr.color() != color) {
                         moves[pos.row()][pos.col()] = "redsquare.png";
                     }
                     break;
                 }
-
-                curr = curr.add(step);
             }
         }
 
