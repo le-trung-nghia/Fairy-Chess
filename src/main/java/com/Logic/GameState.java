@@ -25,7 +25,7 @@ public class GameState {
 
     private void setSquare(Position pos, BoardPiece piece) {
         Objects.requireNonNull(pos);
-        Objects.requireNonNull(piece);
+//        Objects.requireNonNull(piece);
         board[pos.row()][pos.col()] = piece;
     }
 

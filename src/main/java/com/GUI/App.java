@@ -12,15 +12,21 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
+import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
 
 import java.util.Objects;
 
 public class App extends Application {
 
-	private static final int SQUARE_SIZE = 95;
+	private static final int SQUARE_SIZE = 70;
 	private GameState logic;
 	private Pane boardPane;
 	private Position selectedPosition = null;
+	private static final int MARGIN = 20;
+	private static final Color BG_COLOR = Color.web("#808080");  // Gray background
+	private static final int SIDE_PANE_WIDTH = 250;
+	private VBox sidePane;
 
 	public void renderBoard(Pane boardPane, GameState logic) {
 		// Board background - scale to board size
@@ -38,6 +44,10 @@ public class App extends Application {
 				int finalCol = col;
 				Rectangle square = new Rectangle(col * SQUARE_SIZE, row * SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE);
 				square.setFill(Color.TRANSPARENT);
+
+//				square.setStroke(Color.web("#0000FF"));
+//				square.setStrokeWidth(1);
+
 
 				square.setOnMouseClicked(event -> handleSquareClick(finalRow, finalCol));
 				boardPane.getChildren().add(square);
@@ -136,19 +146,51 @@ public class App extends Application {
 		// App Icon
 		stage.getIcons().add(new Image(getClass().getResourceAsStream("/icon.png")));
 
-		// Layout & Scene
+		// Create main container
+		Pane mainContainer = new Pane();
+		mainContainer.setStyle("-fx-background-color: #505050;");  // Dark gray background
+
+		// Create board pane
 		boardPane = new Pane();
-		logic = new GameState();
 		int boardSize = SQUARE_SIZE * 8;
-		Scene scene = new Scene(boardPane, boardSize, boardSize);
+
+		// Add gray rectangle behind board
+		Rectangle bgRect = new Rectangle(MARGIN, MARGIN, boardSize, boardSize);
+		bgRect.setFill(Color.web("#808080"));
+		mainContainer.getChildren().add(bgRect);
+
+		boardPane.setLayoutX(MARGIN);
+		boardPane.setLayoutY(MARGIN);
+		mainContainer.getChildren().add(boardPane);
+
+		// Create side pane for the stack
+		// TODO SHow the previous moves from the stack
+		VBox sidePane = new VBox();
+		int sidePaneX = MARGIN + boardSize + MARGIN;
+		sidePane.setLayoutX(sidePaneX);
+		sidePane.setLayoutY(MARGIN);
+		sidePane.setPrefWidth(SIDE_PANE_WIDTH);
+		sidePane.setPrefHeight(boardSize);
+		sidePane.setStyle("-fx-border-color: #333333; -fx-border-width: 2; -fx-padding: 10;");
+//		sidePane.setSpacing(5);  // Space between moves
+
+		// TODO: Each move goes here as a Text/Label in the VBox
+
+		mainContainer.getChildren().add(sidePane);
+
+		// Initialize game
+		logic = new GameState();
 		renderBoard(boardPane, logic);
 
+		// Calculate total width
+		int totalWidth = MARGIN + boardSize + MARGIN + SIDE_PANE_WIDTH + MARGIN;
+
+		Scene scene = new Scene(mainContainer, totalWidth, boardSize + MARGIN * 2);
 		stage.setTitle("Fairy Chess 2026");
 		stage.setScene(scene);
 		stage.setResizable(false);
 		stage.show();
 	}
-
 	public static void main(String[] args) {
 		launch();
 	}
