@@ -40,10 +40,21 @@ public class GameState {
         turnNumber++;
     }
 
-    public void place(Piece piece, Position pos, boolean isKing, Color color) {
+    public void place(Piece piece, PieceState state) {
+        Position pos = state.position();
         if (getSquare(pos) != null) {
             throw new IllegalStateException(
                     "Cannot place a new piece at (%d, %d) because there is already a piece there."
+                            .formatted(pos.row(), pos.col()));
+        }
+        setSquare((pos), new BoardPiece(state, piece));
+    }
+
+    public void destroy(Position pos) {
+        Objects.requireNonNull(pos);
+        if (getSquare(pos) != null) {
+            throw new IllegalStateException(
+                    "Cannot destroy piece at (%d, %d) because there is no piece there."
                             .formatted(pos.row(), pos.col()));
         }
         setSquare(pos, null);

@@ -11,7 +11,7 @@ public class BoardPiece {
     private PieceState state;
     private Piece piece;
 
-    private BoardPiece(PieceState state, Piece piece) {
+    BoardPiece(PieceState state, Piece piece) {
         this.piece = Objects.requireNonNull(piece);
         this.state = Objects.requireNonNull(state);
     }
