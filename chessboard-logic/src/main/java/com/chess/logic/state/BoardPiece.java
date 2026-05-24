@@ -1,5 +1,6 @@
 package com.chess.logic.state;
 
+import java.io.InputStream;
 import java.util.Objects;
 
 import com.chess.logic.types.Color;
@@ -58,5 +59,15 @@ public class BoardPiece {
     // Expose the method icon
     public String icon() {
         return piece.icon(this);
+    }
+
+    // Load the icon using the piece's own classloader so plugin JARs find their own resources
+    public InputStream iconStream() {
+        return piece.getClass().getResourceAsStream("/" + icon());
+    }
+
+    // Delegate valid-move computation to the underlying piece
+    public String[][] getMovableSquares(GameState state) {
+        return piece.getMovableSquares(state, this);
     }
 }

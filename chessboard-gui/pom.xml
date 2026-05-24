@@ -26,6 +26,11 @@
             <groupId>com.chess</groupId>
             <artifactId>chessboard-logic</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>com.chess</groupId>
+            <artifactId>base-pieces</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
@@ -33,8 +38,9 @@
             <plugin>
                 <groupId>org.openjfx</groupId>
                 <artifactId>javafx-maven-plugin</artifactId>
+                <version>0.0.8</version>
                 <configuration>
-                    <mainClass>com.GUI.App</mainClass>
+                    <mainClass>com.chess.gui.App</mainClass>
                 </configuration>
             </plugin>
         </plugins>

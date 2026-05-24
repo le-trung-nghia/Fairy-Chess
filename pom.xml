@@ -42,6 +42,11 @@
                 <artifactId>chessboard-logic</artifactId>
                 <version>${project.version}</version>
             </dependency>
+            <dependency>
+                <groupId>com.chess</groupId>
+                <artifactId>base-pieces</artifactId>
+                <version>${project.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 </project>

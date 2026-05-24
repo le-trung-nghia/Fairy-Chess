@@ -60,9 +60,12 @@ public class GameState {
         setSquare(pos, null);
     }
 
-    // get the turn number
     public int turnNumber() {
         return turnNumber;
+    }
+
+    public Color turnPlayer() {
+        return turnPlayer;
     }
 
     // displace a piece on the board to another location
