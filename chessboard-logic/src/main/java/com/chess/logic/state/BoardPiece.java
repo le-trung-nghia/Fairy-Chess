@@ -1,0 +1,73 @@
+package com.chess.logic.state;
+
+import java.io.InputStream;
+import java.util.Objects;
+
+import com.chess.logic.types.Color;
+import com.chess.logic.types.Piece;
+import com.chess.logic.types.Position;
+
+// A piece on the board along with some state
+public class BoardPiece {
+    private PieceState state;
+    private Piece piece;
+
+    BoardPiece(PieceState state, Piece piece) {
+        this.piece = Objects.requireNonNull(piece);
+        this.state = Objects.requireNonNull(state);
+    }
+
+    void move(Position pos) {
+        this.state.setPosition(pos);
+    }
+
+    void commandMove(GameState state, Position pos) {
+        this.piece.onMoveCommand(state, this, pos);
+    }
+
+    void displace(GameState state, Position pos) {
+        this.state.setPosition(pos);
+        piece.onDisplace(state, this);
+    }
+
+    void capture(GameState state) {
+        piece.onCapture(state, this);
+    }
+
+    void changeColor(GameState state, Color color) {
+        this.state.setColor(color);
+        piece.onColorChange(state, this);
+    }
+
+    void changeKingStatus(GameState state, boolean isKing) {
+        this.state.setKingStatus(isKing);
+        piece.onKingStatusChange(state, this);
+    }
+
+    public boolean isKing() {
+        return this.state.isKing();
+    }
+
+    public Color color() {
+        return this.state.color();
+    }
+
+    public Position position() {
+        return this.state.position();
+    }
+
+    // Expose the method icon
+    public String icon() {
+        return piece.icon(this);
+    }
+
+    // Load the icon image stream using the piece's own classloader so that
+    // plugin JARs (loaded via URLClassLoader) can resolve their own resources.
+    public InputStream iconStream() {
+        return piece.getClass().getResourceAsStream("/" + icon());
+    }
+
+    public String[][] getMovableSquares(GameState state) {
+        return piece.getMovableSquares(state, this);
+    }
+}

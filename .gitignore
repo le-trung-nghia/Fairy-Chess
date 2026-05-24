@@ -1,0 +1,15 @@
+# Maven build output
+target/
+
+# IDEA folder
+.idea/
+
+# Eclipse specific files
+.settings/
+.project
+.classpath
+.metadata/
+
+# OS specific
+.DS_Store
+Thumbs.db
