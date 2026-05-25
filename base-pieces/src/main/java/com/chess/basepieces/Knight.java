@@ -45,9 +45,9 @@ public class Knight extends Piece {
                 Position pos = newPos.toPosition();
                 BoardPiece curr = state.getSquare(pos);
                 if (curr == null) {
-                    moves[pos.row()][pos.col()] = ".png";
+                    moves[pos.row()][pos.col()] = "move.png";
                 } else if (curr.color() != thisState.color()) {
-                    moves[pos.row()][pos.col()] = ".png";
+                    moves[pos.row()][pos.col()] = "attack.png";
                 }
             }
         }

@@ -21,7 +21,7 @@ public record Rectangle(Position topLeft, Position bottomRight) implements Board
             if (current.col() < bottomRight.col()) {
                 return current.add(new Vector(0, 1));
             } else if (current.row() < bottomRight.row()) {
-                return current.add(new Vector(1, 0));
+                return new Position(current.row() + 1, topLeft.col());
             } else {
                 return null;
             }

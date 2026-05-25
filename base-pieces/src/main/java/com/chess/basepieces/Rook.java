@@ -43,10 +43,10 @@ public class Rook extends Piece {
                 BoardPiece curr = state.getSquare(pos);
 
                 if (curr == null) {
-                    moves[pos.row()][pos.col()] = "greensquare.png";
+                    moves[pos.row()][pos.col()] = "move.png";
                 } else {
                     if (curr.color() != thisState.color()) {
-                        moves[pos.row()][pos.col()] = "redsquare.png";
+                        moves[pos.row()][pos.col()] = "attack.png";
                     }
                     break;
                 }

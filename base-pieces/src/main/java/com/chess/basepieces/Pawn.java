@@ -40,13 +40,13 @@ public class Pawn extends Piece {
         // One step forward
         Position oneStep = thisState.position().add(fwd);
         if (state.getSquare(oneStep) == null) {
-            moves[oneStep.row()][oneStep.col()] = ".png";
+            moves[oneStep.row()][oneStep.col()] = "move.png";
 
             // Two steps forward
             if (!hasMoved) {
                 Position twoSteps = thisState.position().add(fwd.mul(2));
                 if (state.getSquare(twoSteps) == null) {
-                    moves[twoSteps.row()][twoSteps.col()] = ".png";
+                    moves[twoSteps.row()][twoSteps.col()] = "move.png";
                 }
             }
         }
@@ -55,7 +55,7 @@ public class Pawn extends Piece {
         for (Direction diag : new Direction[] { forward.skewLeft(), forward.skewRight() }) {
             Position capturePos = thisState.position().add(diag.unitVector());
             if (state.hasEnemy(capturePos, thisState.color())) {
-                moves[capturePos.row()][capturePos.col()] = ".png";
+                moves[capturePos.row()][capturePos.col()] = "attack.png";
             }
         }
 
