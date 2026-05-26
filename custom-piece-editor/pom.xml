@@ -6,6 +6,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.chess</groupId>
+    <!-- JAR filename -->
     <artifactId>viking-pieces</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <packaging>jar</packaging>
@@ -15,10 +16,8 @@
         <maven.compiler.release>25</maven.compiler.release>
     </properties>
 
-    <!--
-        chessboard-logic must already be in ~/.m2 before building this.
-        Run  mvn install  from the Fairy-Chess root project first.
-    -->
+    <!-- chessboard-logic must already be in ~/.m2 before building this.
+    Run  mvn install  from the Fairy-Chess root project first. -->
     <dependencies>
         <dependency>
             <groupId>com.chess</groupId>
@@ -37,10 +36,8 @@
                 <configuration>
                     <archive>
                         <manifestEntries>
-                            <!--
-                                PieceRegistry reads this to name the pack.
-                                Use a short, unique, lowercase identifier.
-                            -->
+                            <!-- PieceRegistry reads this to name the pack.
+                            Use a short, unique, lowercase identifier.-->
                             <Pack-Name>viking</Pack-Name>
                         </manifestEntries>
                     </archive>

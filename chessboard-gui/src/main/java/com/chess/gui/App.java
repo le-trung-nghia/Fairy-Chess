@@ -575,10 +575,7 @@ public class App extends Application {
         }
     }
 
-    // ══════════════════════════════════════════════════════════════════════════
     // UI helpers
-    // ══════════════════════════════════════════════════════════════════════════
-
     private String mainButtonCss(double width) {
         return "-fx-background-color: #4a90d9; -fx-text-fill: white;" +
                "-fx-font-size: 15; -fx-font-weight: bold;" +
