@@ -15,8 +15,7 @@ public class Viking extends Piece {
     private static final Direction[] CARDINAL =
             { Direction.NORTH, Direction.SOUTH, Direction.EAST, Direction.WEST };
 
-    // ── Identity ──────────────────────────────────────────────────────────────
-
+    // Identity
     @Override
     public String identifier() {
         return "Viking";
@@ -27,12 +26,9 @@ public class Viking extends Piece {
         return thisState.color() == Color.BLACK ? "black_viking.png" : "white_viking.png";
     }
 
-    // ── Movement ──────────────────────────────────────────────────────────────
-
-    /**
-     * Executes a move.  Captures an enemy at the destination first (if present),
-     * then moves the Viking there, then passes control to the other player.
-     */
+    // Movement
+    // Executes a move.  Captures an enemy at the destination first (if present),
+    // then moves the Viking there, then passes control to the other player.
     @Override
     public void onMoveCommand(GameState state, BoardPiece thisState, Position to) {
         if (state.hasEnemy(to, thisState.color())) {
@@ -42,19 +38,7 @@ public class Viking extends Piece {
         state.passControl();
     }
 
-    /**
-     * Returns all squares the Viking can legally move to.
-     *
-     * A non-null entry means the square is reachable:
-     *   "move.png"   → empty square the Viking can land on
-     *   "attack.png" → enemy piece the Viking can capture
-     *
-     * Uses the same Vector/isInBounds pattern as the other base pieces (e.g. Knight).
-     *
-     * Algorithm: two passes.
-     *   Pass 1: all squares one orthogonal step from the Viking.
-     *   Pass 2: for every empty pass-1 square, all squares one more step away.
-     */
+    // Returns all squares the Viking can legally move to.
     @Override
     public String[][] getMovableSquares(GameState state, BoardPiece thisState) {
         String[][] moves  = new String[8][8];
@@ -63,20 +47,16 @@ public class Viking extends Piece {
         for (Direction d1 : CARDINAL) {
             Vector v1 = origin.add(d1.unitVector());
             if (!v1.isInBounds()) continue;                    // off the board
-
             Position step1 = v1.toPosition();
             BoardPiece at1 = state.getSquare(step1);
-
             if (at1 == null) {
                 // Empty — Viking can stop here …
                 moves[step1.row()][step1.col()] = "move.png";
-
                 // … or take a second step in any cardinal direction
                 for (Direction d2 : CARDINAL) {
                     Vector v2 = v1.add(d2.unitVector());
                     if (!v2.isInBounds()) continue;            // off the board
                     if (v2.equals(origin)) continue;           // don't return to start
-
                     Position step2 = v2.toPosition();
                     BoardPiece at2 = state.getSquare(step2);
                     if (at2 == null) {
