@@ -23,7 +23,7 @@ public class Bishop extends Piece {
 
     @Override
     public String identifier() {
-        return "Bishop";
+        return "bishop";
     }
 
     @Override

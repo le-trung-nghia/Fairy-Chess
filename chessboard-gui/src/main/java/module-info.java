@@ -1,6 +1,5 @@
 module com.chess.gui {
     requires com.chess.logic;
-    requires com.chess.basepieces;
     requires javafx.graphics;
     requires javafx.controls;
 

@@ -11,6 +11,7 @@
         <module>chessboard-logic</module>
         <module>chessboard-gui</module>
         <module>base-pieces</module>
+        <module>viking-pieces</module>
     </modules>
 
     <properties>
@@ -40,11 +41,6 @@
             <dependency>
                 <groupId>com.chess</groupId>
                 <artifactId>chessboard-logic</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.chess</groupId>
-                <artifactId>base-pieces</artifactId>
                 <version>${project.version}</version>
             </dependency>
         </dependencies>

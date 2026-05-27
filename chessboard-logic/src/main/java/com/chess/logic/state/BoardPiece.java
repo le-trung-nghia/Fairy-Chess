@@ -61,9 +61,10 @@ public class BoardPiece {
         return piece.icon(this);
     }
 
-    // Load the icon using the piece's own classloader so plugin JARs find their own resources
+    // Load the icon using the piece's own classloader so plugin JARs find their own
+    // resources
     public InputStream iconStream() {
-        return piece.getClass().getResourceAsStream("/" + icon());
+        return piece.getClass().getClassLoader().getResourceAsStream(icon());
     }
 
     // Delegate valid-move computation to the underlying piece

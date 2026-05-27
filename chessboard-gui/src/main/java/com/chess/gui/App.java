@@ -1,11 +1,5 @@
 package com.chess.gui;
 
-import com.chess.basepieces.Bishop;
-import com.chess.basepieces.King;
-import com.chess.basepieces.Knight;
-import com.chess.basepieces.Pawn;
-import com.chess.basepieces.Queen;
-import com.chess.basepieces.Rook;
 import com.chess.logic.state.BoardPiece;
 import com.chess.logic.state.GameState;
 import com.chess.logic.state.PieceState;
@@ -15,6 +9,7 @@ import com.chess.registry.PiecePath;
 import com.chess.registry.PieceRegistry;
 
 import java.io.File;
+import java.net.URISyntaxException;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -47,37 +42,37 @@ import java.util.Objects;
 public class App extends Application {
 
     // Window / board constants
-    private static final int SQUARE_SIZE    = 70;
-    private static final int MARGIN         = 20;
-    private static final int SIDE_PANE_W    = 250;
-    private static final int BOARD_PX       = SQUARE_SIZE * 8;                         // 560
-    private static final int WINDOW_W       = MARGIN + BOARD_PX + MARGIN + SIDE_PANE_W + MARGIN; // 870
-    private static final int WINDOW_H       = BOARD_PX + MARGIN * 2;                   // 600
+    private static final int SQUARE_SIZE = 70;
+    private static final int MARGIN = 20;
+    private static final int SIDE_PANE_W = 250;
+    private static final int BOARD_PX = SQUARE_SIZE * 8; // 560
+    private static final int WINDOW_W = MARGIN + BOARD_PX + MARGIN + SIDE_PANE_W + MARGIN; // 870
+    private static final int WINDOW_H = BOARD_PX + MARGIN * 2; // 600
 
     // Game state
     private GameState logic;
-    private Pane      boardPane;
-    private Position  selectedPosition = null;
-    private String[][] validMoves      = null;
+    private Pane boardPane;
+    private Position selectedPosition = null;
+    private String[][] validMoves = null;
 
     // History: each entry is {fromPos, toPos}; viewIndex 0 = initial board
     private final List<Position[]> moveHistory = new ArrayList<>();
     private int viewIndex = 0;
 
     // Timer
-    private int      whiteTimeSeconds;
-    private int      blackTimeSeconds;
+    private int whiteTimeSeconds;
+    private int blackTimeSeconds;
     private Timeline gameTimer;
 
     // Piece-pack registry (loaded once at startup)
     private final PieceRegistry registry = new PieceRegistry();
 
     // Live UI handles (set when game scene is built)
-    private Label  whiteTimerLabel;
-    private Label  blackTimerLabel;
-    private Label  turnLabel;
-    private VBox   historyListBox;
-    private Stage  primaryStage;
+    private Label whiteTimerLabel;
+    private Label blackTimerLabel;
+    private Label turnLabel;
+    private VBox historyListBox;
+    private Stage primaryStage;
 
     // JavaFX entry
     @Override
@@ -87,7 +82,7 @@ public class App extends Application {
                 getClass().getResourceAsStream("/icon.png"))));
         stage.setTitle("Fairy Chess 2026");
         stage.setResizable(false);
-        loadPacks();       // scan packs/ folder before any scene is shown
+        loadPacks(); // scan packs/ folder before any scene is shown
         showMenuScene();
         stage.show();
     }
@@ -98,12 +93,26 @@ public class App extends Application {
      * a "packs" folder relative to the working directory.
      *
      * Each JAR must contain:
-     *   • META-INF/MANIFEST.MF  with  Pack-Name: <identifier>
-     *   • META-INF/services/com.chess.logic.types.Piece  listing provider classes
-     *   • Piece image PNGs at the root of the JAR
+     * • META-INF/MANIFEST.MF with Pack-Name: <identifier>
+     * • META-INF/services/com.chess.logic.types.Piece listing provider classes
+     * • Piece image PNGs at the root of the JAR
      */
     private void loadPacks() {
-        File packsDir = new File(System.getProperty("packs.dir", "packs"));
+        String jarPath = null;
+        try {
+            jarPath = App.class.getProtectionDomain()
+                    .getCodeSource()
+                    .getLocation()
+                    .toURI()
+                    .getPath();
+        } catch (URISyntaxException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        File jarFile = new File(jarPath);
+        File jarDirectory = jarFile.isDirectory() ? jarFile : jarFile.getParentFile();
+        File packsDir = new File(jarDirectory, "packs");
         if (!packsDir.isDirectory()) {
             System.out.println("[packs] directory not found: " + packsDir.getAbsolutePath());
             return;
@@ -129,9 +138,9 @@ public class App extends Application {
         logo.setFont(Font.font("Arial", FontWeight.BOLD, 62));
         logo.setFill(Color.WHITE);
 
-        Button playBtn     = mainButton("PLAY",     220);
+        Button playBtn = mainButton("PLAY", 220);
         Button settingsBtn = mainButton("SETTINGS", 220);
-        playBtn    .setOnAction(e -> showTimeSelectScene());
+        playBtn.setOnAction(e -> showTimeSelectScene());
         settingsBtn.setOnAction(e -> showSettingsScene());
 
         VBox box = new VBox(28, logo, playBtn, settingsBtn);
@@ -147,15 +156,15 @@ public class App extends Application {
         title.setFont(Font.font("Arial", FontWeight.BOLD, 34));
         title.setFill(Color.WHITE);
 
-        Button b30  = mainButton("30 minutes", 220);
-        Button b10  = mainButton("10 minutes", 220);
-        Button b3   = mainButton(" 3 minutes", 220);
-        Button back = mainButton("← Back",     220);
+        Button b30 = mainButton("30 minutes", 220);
+        Button b10 = mainButton("10 minutes", 220);
+        Button b3 = mainButton(" 3 minutes", 220);
+        Button back = mainButton("← Back", 220);
         back.setStyle(mainButtonCss(220).replace("#4a90d9", "#555555"));
 
-        b30 .setOnAction(e -> startGame(30 * 60));
-        b10 .setOnAction(e -> startGame(10 * 60));
-        b3  .setOnAction(e -> startGame( 3 * 60));
+        b30.setOnAction(e -> startGame(30 * 60));
+        b10.setOnAction(e -> startGame(10 * 60));
+        b3.setOnAction(e -> startGame(3 * 60));
         back.setOnAction(e -> showMenuScene());
 
         VBox box = new VBox(16, title, b30, b10, b3, back);
@@ -194,12 +203,13 @@ public class App extends Application {
         logic = new GameState();
         setupBoard(logic);
         moveHistory.clear();
-        viewIndex        = 0;
+        viewIndex = 0;
         selectedPosition = null;
-        validMoves       = null;
+        validMoves = null;
         whiteTimeSeconds = timeSeconds;
         blackTimeSeconds = timeSeconds;
-        if (gameTimer != null) gameTimer.stop();
+        if (gameTimer != null)
+            gameTimer.stop();
 
         // Layout
         Pane mainContainer = new Pane();
@@ -230,21 +240,21 @@ public class App extends Application {
         // Turn indicator
         turnLabel = new Label("⬜  White to move");
         turnLabel.setStyle(
-            "-fx-text-fill: white; -fx-font-size: 14; -fx-font-weight: bold;");
+                "-fx-text-fill: white; -fx-font-size: 14; -fx-font-weight: bold;");
 
         // Timers — black on top (they see the opponent clock first), white below
         blackTimerLabel = new Label("⬛  " + formatTime(blackTimeSeconds));
         whiteTimerLabel = new Label("⬜  " + formatTime(whiteTimeSeconds));
         blackTimerLabel.setMaxWidth(Double.MAX_VALUE);
         whiteTimerLabel.setMaxWidth(Double.MAX_VALUE);
-        applyTimerStyle(whiteTimerLabel, true);   // white moves first → active
+        applyTimerStyle(whiteTimerLabel, true); // white moves first → active
         applyTimerStyle(blackTimerLabel, false);
 
         // History header
         Label historyHeader = new Label("Move History");
         historyHeader.setStyle(
-            "-fx-text-fill: #aaaaaa; -fx-font-size: 12; -fx-font-weight: bold;" +
-            "-fx-padding: 6 0 2 0;");
+                "-fx-text-fill: #aaaaaa; -fx-font-size: 12; -fx-font-weight: bold;" +
+                        "-fx-padding: 6 0 2 0;");
 
         // History list inside a scroll pane
         historyListBox = new VBox(2);
@@ -252,8 +262,8 @@ public class App extends Application {
 
         ScrollPane scroll = new ScrollPane(historyListBox);
         scroll.setStyle(
-            "-fx-background: #2b2b2b; -fx-background-color: #2b2b2b;" +
-            "-fx-border-color: transparent;");
+                "-fx-background: #2b2b2b; -fx-background-color: #2b2b2b;" +
+                        "-fx-border-color: transparent;");
         scroll.setFitToWidth(true);
         scroll.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         scroll.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
@@ -261,23 +271,23 @@ public class App extends Application {
 
         // Navigation buttons
         Button backBtn = sideButton("◀ Back");
-        Button fwdBtn  = sideButton("Forward ▶");
+        Button fwdBtn = sideButton("Forward ▶");
         backBtn.setOnAction(e -> navigateHistory(-1));
-        fwdBtn .setOnAction(e -> navigateHistory(+1));
+        fwdBtn.setOnAction(e -> navigateHistory(+1));
         HBox nav = new HBox(6, backBtn, fwdBtn);
         nav.setAlignment(Pos.CENTER);
 
         VBox sidebar = new VBox(8,
-            turnLabel,
-            blackTimerLabel,
-            whiteTimerLabel,
-            historyHeader,
-            scroll,
-            nav);
+                turnLabel,
+                blackTimerLabel,
+                whiteTimerLabel,
+                historyHeader,
+                scroll,
+                nav);
         sidebar.setStyle(
-            "-fx-background-color: #3a3a3a;" +
-            "-fx-border-color: #222222; -fx-border-width: 1;" +
-            "-fx-padding: 10;");
+                "-fx-background-color: #3a3a3a;" +
+                        "-fx-border-color: #222222; -fx-border-width: 1;" +
+                        "-fx-padding: 10;");
         return sidebar;
     }
 
@@ -291,9 +301,19 @@ public class App extends Application {
     private void tickTimer() {
         boolean whiteTurn = logic.turnPlayer() == com.chess.logic.types.Color.WHITE;
         if (whiteTurn) {
-            if (--whiteTimeSeconds <= 0) { whiteTimeSeconds = 0; gameTimer.stop(); onTimeout(false); return; }
+            if (--whiteTimeSeconds <= 0) {
+                whiteTimeSeconds = 0;
+                gameTimer.stop();
+                onTimeout(false);
+                return;
+            }
         } else {
-            if (--blackTimeSeconds <= 0) { blackTimeSeconds = 0; gameTimer.stop(); onTimeout(true);  return; }
+            if (--blackTimeSeconds <= 0) {
+                blackTimeSeconds = 0;
+                gameTimer.stop();
+                onTimeout(true);
+                return;
+            }
         }
         refreshTimerUI();
     }
@@ -318,7 +338,7 @@ public class App extends Application {
 
     private void applyTimerStyle(Label lbl, boolean active) {
         String base = "-fx-font-size: 18; -fx-font-weight: bold;" +
-                      "-fx-padding: 6 10; -fx-background-radius: 0;";
+                "-fx-padding: 6 10; -fx-background-radius: 0;";
         if (active) {
             lbl.setStyle("-fx-text-fill: white; -fx-background-color: #505050;" + base);
         } else {
@@ -333,10 +353,11 @@ public class App extends Application {
     // Move history & replay
     private void navigateHistory(int delta) {
         int next = viewIndex + delta;
-        if (next < 0 || next > moveHistory.size()) return;
-        viewIndex        = next;
+        if (next < 0 || next > moveHistory.size())
+            return;
+        viewIndex = next;
         selectedPosition = null;
-        validMoves       = null;
+        validMoves = null;
         updateHistoryList();
         redrawBoard();
     }
@@ -344,27 +365,27 @@ public class App extends Application {
     private void updateHistoryList() {
         historyListBox.getChildren().clear();
         for (int i = 0; i < moveHistory.size(); i++) {
-            boolean isWhite  = (i % 2 == 0);
-            String  prefix   = isWhite ? (i / 2 + 1) + ".  " : "      ";
-            String  text     = prefix + formatMove(moveHistory.get(i));
-            boolean current  = (i == viewIndex - 1);
+            boolean isWhite = (i % 2 == 0);
+            String prefix = isWhite ? (i / 2 + 1) + ".  " : "      ";
+            String text = prefix + formatMove(moveHistory.get(i));
+            boolean current = (i == viewIndex - 1);
 
             Label lbl = new Label(text);
             lbl.setMaxWidth(Double.MAX_VALUE);
             if (current) {
                 lbl.setStyle(
-                    "-fx-text-fill: #1a1a1a; -fx-font-size: 13;" +
-                    "-fx-background-color: #f0c040;" +
-                    "-fx-padding: 3 6; -fx-background-radius: 0;");
+                        "-fx-text-fill: #1a1a1a; -fx-font-size: 13;" +
+                                "-fx-background-color: #f0c040;" +
+                                "-fx-padding: 3 6; -fx-background-radius: 0;");
             } else {
                 lbl.setStyle("-fx-text-fill: #cccccc; -fx-font-size: 13; -fx-padding: 3 6;");
             }
 
             final int jumpTo = i + 1;
             lbl.setOnMouseClicked(e -> {
-                viewIndex        = jumpTo;
+                viewIndex = jumpTo;
                 selectedPosition = null;
-                validMoves       = null;
+                validMoves = null;
                 updateHistoryList();
                 redrawBoard();
             });
@@ -377,7 +398,7 @@ public class App extends Application {
     }
 
     private String toAlgebraic(Position p) {
-        return "" + (char)('a' + p.col()) + (8 - p.row());
+        return "" + (char) ('a' + p.col()) + (8 - p.row());
     }
 
     // Board rendering
@@ -398,7 +419,8 @@ public class App extends Application {
                 Rectangle sq = new Rectangle(
                         col * SQUARE_SIZE, row * SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE);
                 sq.setFill(Color.TRANSPARENT);
-                if (!inReplay) sq.setOnMouseClicked(ev -> handleSquareClick(r, c));
+                if (!inReplay)
+                    sq.setOnMouseClicked(ev -> handleSquareClick(r, c));
                 pane.getChildren().add(sq);
             }
         }
@@ -412,7 +434,8 @@ public class App extends Application {
         for (int row = 0; row < 8; row++) {
             for (int col = 0; col < 8; col++) {
                 BoardPiece piece = state.getSquare(new Position(row, col));
-                if (piece != null) addPieceToBoard(pane, piece, row, col);
+                if (piece != null)
+                    addPieceToBoard(pane, piece, row, col);
             }
         }
     }
@@ -420,7 +443,8 @@ public class App extends Application {
     private void renderMoveHighlights(Pane pane, String[][] moves, GameState state) {
         for (int row = 0; row < 8; row++) {
             for (int col = 0; col < 8; col++) {
-                if (moves[row][col] == null) continue;
+                if (moves[row][col] == null)
+                    continue;
                 double x = col * SQUARE_SIZE;
                 double y = row * SQUARE_SIZE;
 
@@ -445,9 +469,9 @@ public class App extends Application {
     }
 
     private void addPieceToBoard(Pane pane, BoardPiece piece, int row, int col) {
-        Image     img = new Image(Objects.requireNonNull(
+        Image img = new Image(Objects.requireNonNull(
                 piece.iconStream(), "Missing icon: " + piece.icon()));
-        ImageView iv  = new ImageView(img);
+        ImageView iv = new ImageView(img);
         iv.setX(col * SQUARE_SIZE);
         iv.setY(row * SQUARE_SIZE);
         iv.setFitWidth(SQUARE_SIZE);
@@ -464,7 +488,7 @@ public class App extends Application {
 
     // Click handling
     private void handleSquareClick(int row, int col) {
-        Position   clickedPos   = new Position(row, col);
+        Position clickedPos = new Position(row, col);
         BoardPiece clickedPiece = logic.getSquare(clickedPos);
 
         if (selectedPosition != null) {
@@ -472,7 +496,7 @@ public class App extends Application {
                 // Legal destination — execute move and record it
                 try {
                     logic.commandMove(selectedPosition, clickedPos);
-                    moveHistory.add(new Position[]{ selectedPosition, clickedPos });
+                    moveHistory.add(new Position[] { selectedPosition, clickedPos });
                     viewIndex = moveHistory.size();
                     updateHistoryList();
                     refreshTimerUI();
@@ -480,22 +504,22 @@ public class App extends Application {
                     System.out.println("Move failed: " + e.getMessage());
                 }
                 selectedPosition = null;
-                validMoves       = null;
+                validMoves = null;
             } else if (clickedPiece != null
                     && clickedPiece.color() == logic.turnPlayer()) {
                 // Switch selection to another friendly piece
                 selectedPosition = clickedPos;
-                validMoves       = computeValidMoves(clickedPos, clickedPiece);
+                validMoves = computeValidMoves(clickedPos, clickedPiece);
             } else {
                 // Illegal square — deselect
                 selectedPosition = null;
-                validMoves       = null;
+                validMoves = null;
             }
         } else {
             // Select a piece belonging to the current player
             if (clickedPiece != null && clickedPiece.color() == logic.turnPlayer()) {
                 selectedPosition = clickedPos;
-                validMoves       = computeValidMoves(clickedPos, clickedPiece);
+                validMoves = computeValidMoves(clickedPos, clickedPiece);
             }
         }
 
@@ -512,7 +536,8 @@ public class App extends Application {
     }
 
     private void redrawBoard() {
-        if (boardPane == null) return;
+        if (boardPane == null)
+            return;
         boardPane.getChildren().clear();
         // Show a snapshot when in replay mode, live state otherwise
         GameState display = (viewIndex < moveHistory.size())
@@ -538,34 +563,48 @@ public class App extends Application {
     // Board setup
     private void setupBoard(GameState state) {
         // Standard back ranks and pawn rows
-        Piece[] back  = { new Rook(), new Knight(), new Bishop(), new Queen(),
-                          new King(), new Bishop(), new Knight(), new Rook() };
-        Piece[] backW = { new Rook(), new Knight(), new Bishop(), new Queen(),
-                          new King(), new Bishop(), new Knight(), new Rook() };
+        Piece[] back = { registry.instantiatePiece(new PiecePath("base", "rook")),
+                registry.instantiatePiece(new PiecePath("base", "knight")),
+                registry.instantiatePiece(new PiecePath("base", "bishop")),
+                registry.instantiatePiece(new PiecePath("base", "queen")),
+                registry.instantiatePiece(new PiecePath("base", "king")),
+                registry.instantiatePiece(new PiecePath("base", "bishop")),
+                registry.instantiatePiece(new PiecePath("base", "knight")),
+                registry.instantiatePiece(new PiecePath("base", "rook")) };
+        Piece[] backW = { registry.instantiatePiece(new PiecePath("base", "rook")),
+                registry.instantiatePiece(new PiecePath("base", "knight")),
+                registry.instantiatePiece(new PiecePath("base", "bishop")),
+                registry.instantiatePiece(new PiecePath("base", "queen")),
+                registry.instantiatePiece(new PiecePath("base", "king")),
+                registry.instantiatePiece(new PiecePath("base", "bishop")),
+                registry.instantiatePiece(new PiecePath("base", "knight")),
+                registry.instantiatePiece(new PiecePath("base", "rook")) };
         for (int col = 0; col < 8; col++) {
             boolean king = (col == 4);
-            state.place(back[col],  new PieceState(king,  com.chess.logic.types.Color.BLACK, new Position(0, col)));
-            state.place(new Pawn(), new PieceState(false, com.chess.logic.types.Color.BLACK, new Position(1, col)));
-            state.place(new Pawn(), new PieceState(false, com.chess.logic.types.Color.WHITE, new Position(6, col)));
-            state.place(backW[col], new PieceState(king,  com.chess.logic.types.Color.WHITE, new Position(7, col)));
+            state.place(back[col], new PieceState(king, com.chess.logic.types.Color.BLACK, new Position(0, col)));
+            state.place(registry.instantiatePiece(new PiecePath("base", "pawn")),
+                    new PieceState(false, com.chess.logic.types.Color.BLACK, new Position(1, col)));
+            state.place(registry.instantiatePiece(new PiecePath("base", "pawn")),
+                    new PieceState(false, com.chess.logic.types.Color.WHITE, new Position(6, col)));
+            state.place(backW[col], new PieceState(king, com.chess.logic.types.Color.WHITE, new Position(7, col)));
         }
 
         // Place a Viking on column D (col 3) in front of each side's pawn row.
-        //   Black Viking: row 2  (one step ahead of black pawn at row 1)
-        //   White Viking: row 5  (one step ahead of white pawn at row 6)
+        // Black Viking: row 2 (one step ahead of black pawn at row 1)
+        // White Viking: row 5 (one step ahead of white pawn at row 6)
         // Silently skipped if the viking pack is not loaded.
 
-        //FIXME This is for demo, should be remove later
-        placeFromRegistry(state, "viking", "Viking",
+        // FIXME This is for demo, should be remove later
+        placeFromRegistry(state, "viking", "viking",
                 com.chess.logic.types.Color.BLACK, new Position(2, 3));
-        placeFromRegistry(state, "viking", "Viking",
+        placeFromRegistry(state, "viking", "viking",
                 com.chess.logic.types.Color.WHITE, new Position(5, 3));
     }
 
     // Instantiates a piece from a loaded pack and places it on the board.
     // Logs a warning and continues if the pack or piece name is not found.
     private void placeFromRegistry(GameState state, String packName, String pieceName,
-                                   com.chess.logic.types.Color color, Position pos) {
+            com.chess.logic.types.Color color, Position pos) {
         try {
             Piece piece = registry.instantiatePiece(new PiecePath(packName, pieceName));
             state.place(piece, new PieceState(false, color, pos));
@@ -578,9 +617,9 @@ public class App extends Application {
     // UI helpers
     private String mainButtonCss(double width) {
         return "-fx-background-color: #4a90d9; -fx-text-fill: white;" +
-               "-fx-font-size: 15; -fx-font-weight: bold;" +
-               "-fx-min-width: " + width + ";" +
-               "-fx-padding: 12 24; -fx-background-radius: 0; -fx-cursor: hand;";
+                "-fx-font-size: 15; -fx-font-weight: bold;" +
+                "-fx-min-width: " + width + ";" +
+                "-fx-padding: 12 24; -fx-background-radius: 0; -fx-cursor: hand;";
     }
 
     private Button mainButton(String text, double width) {
@@ -592,8 +631,8 @@ public class App extends Application {
     private Button sideButton(String text) {
         Button b = new Button(text);
         b.setStyle("-fx-background-color: #4a4a4a; -fx-text-fill: #cccccc;" +
-                   "-fx-font-size: 12; -fx-padding: 5 10;" +
-                   "-fx-background-radius: 0; -fx-cursor: hand;");
+                "-fx-font-size: 12; -fx-padding: 5 10;" +
+                "-fx-background-radius: 0; -fx-cursor: hand;");
         return b;
     }
 

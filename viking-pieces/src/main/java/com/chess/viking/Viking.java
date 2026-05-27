@@ -18,7 +18,7 @@ public class Viking extends Piece {
     // Identity
     @Override
     public String identifier() {
-        return "Viking";
+        return "viking";
     }
 
     @Override
