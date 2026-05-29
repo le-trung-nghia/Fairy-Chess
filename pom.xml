@@ -15,10 +15,23 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.release>25</maven.compiler.release>
+        <maven.compiler.release>21</maven.compiler.release>
         <javafx.version>25.0.2</javafx.version>
         <streamex.version>0.8.3</streamex.version>
     </properties>
+
+    <build>
+        <pluginManagement>
+            <plugins>
+                <!-- Pin to a modern version so maven.compiler.release is respected -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>3.13.0</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
 
     <dependencyManagement>
         <dependencies>
