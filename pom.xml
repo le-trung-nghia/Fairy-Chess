@@ -4,14 +4,13 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.chess</groupId>
     <artifactId>chessboard</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>1.0.0</version>
     <packaging>pom</packaging>
 
     <modules>
         <module>chessboard-logic</module>
         <module>chessboard-gui</module>
         <module>base-pieces</module>
-        <module>viking-pieces</module>
     </modules>
 
     <properties>

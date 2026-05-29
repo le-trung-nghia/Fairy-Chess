@@ -5,15 +5,11 @@
     <groupId>com.chess</groupId>
     <artifactId>base-pieces</artifactId>
     <packaging>jar</packaging>
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.release>25</maven.compiler.release>
-    </properties>
 
     <parent>
         <groupId>com.chess</groupId>
         <artifactId>chessboard</artifactId>
-        <version>0.0.1-SNAPSHOT</version>
+        <version>1.0.0</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -31,6 +27,7 @@
 
     <build>
         <plugins>
+            <!-- Sets Pack-Name in manifest so PieceRegistry can identify this pack -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
@@ -43,13 +40,15 @@
                     </archive>
                 </configuration>
             </plugin>
+
+            <!-- Copies the pack JAR into root/target/packs/ for runtime discovery -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-antrun-plugin</artifactId>
                 <version>3.1.0</version>
                 <executions>
                     <execution>
-                        <id>push-to-global-plugins</id>
+                        <id>copy-to-packs</id>
                         <phase>package</phase>
                         <goals>
                             <goal>run</goal>

@@ -68,7 +68,7 @@ public class App extends Application {
             com.chess.logic.types.Color color,
             int row, int col, boolean isKing) {}
 
-    //  Game state ─
+    //  Game state 
 
     private GameState logic;
     private Pane      boardPane;
@@ -85,19 +85,19 @@ public class App extends Application {
     private int      blackTimeSeconds;
     private Timeline gameTimer;
 
-    //  Registry & custom layout ─
+    //  Registry & custom layout 
 
     private final PieceRegistry registry = new PieceRegistry();
     /** null → use buildDefaultLayout() */
     private List<BoardPlacement> customBoardLayout = null;
 
-    //  Live UI handles (game scene) ─
+    //  Live UI handles (game scene) 
 
     private Label whiteTimerLabel, blackTimerLabel, turnLabel;
     private VBox  historyListBox;
     private Stage primaryStage;
 
-    //  Board-editor state ─
+    //  Board-editor state 
 
     private GameState          editorState;
     private final BoardPlacement[][] editorGrid = new BoardPlacement[8][8];
@@ -109,7 +109,7 @@ public class App extends Application {
     private Label editorStatusLabel;
     private VBox  editorPaletteBox;   // rebuilt on each selection change
 
-    //  JavaFX entry ─
+    //  JavaFX entry 
 
     @Override
     public void start(Stage stage) {
@@ -123,7 +123,7 @@ public class App extends Application {
         stage.show();
     }
 
-    //  Pack loading ─
+    //  Pack loading 
 
     /**
      * Scans the packs directory and registers every JAR found there.
@@ -176,7 +176,7 @@ public class App extends Application {
         }
     }
 
-    //  Scene navigation ─
+    //  Scene navigation 
 
     private void showMenuScene() {
         Text logo = new Text("FAIRY CHESS");
@@ -217,7 +217,7 @@ public class App extends Application {
         primaryStage.setScene(new Scene(root, WINDOW_W, WINDOW_H));
     }
 
-    //  Settings scene ─
+    //  Settings scene 
 
     private void showSettingsScene() {
         Text title = new Text("Settings");
@@ -236,7 +236,7 @@ public class App extends Application {
         primaryStage.setScene(new Scene(root, WINDOW_W, WINDOW_H));
     }
 
-    //  Board editor (Settings) ─
+    //  Board editor (Settings) 
 
     private void showBoardEditorScene() {
         initEditor();
@@ -602,7 +602,7 @@ public class App extends Application {
         return sidebar;
     }
 
-    //  Timer ─
+    //  Timer 
 
     private void startGameTimer() {
         gameTimer = new Timeline(new KeyFrame(Duration.seconds(1), e -> tickTimer()));
@@ -698,7 +698,7 @@ public class App extends Application {
         return "" + (char) ('a' + p.col()) + (8 - p.row());
     }
 
-    //  Board rendering ─
+    //  Board rendering 
 
     private void renderBoard(Pane pane, GameState state) {
         ImageView bg = new ImageView(new Image(Objects.requireNonNull(
@@ -977,7 +977,7 @@ public class App extends Application {
         refreshTimerUI();
     }
 
-    //  Board setup ─
+    //  Board setup 
 
     private void setupBoard(GameState state) {
         List<BoardPlacement> layout =
