@@ -720,9 +720,6 @@ public class App extends Application {
             }
         }
 
-        if (!inReplay && selectedPosition != null && validMoves != null)
-            renderMoveHighlights(pane, validMoves, state.getSquare(selectedPosition));
-
         for (int row = 0; row < 8; row++) {
             for (int col = 0; col < 8; col++) {
                 BoardPiece piece = state.getSquare(new Position(row, col));
@@ -734,6 +731,10 @@ public class App extends Application {
                 }
             }
         }
+
+        // Highlights rendered last so they appear on top of piece images
+        if (!inReplay && selectedPosition != null && validMoves != null)
+            renderMoveHighlights(pane, validMoves, state.getSquare(selectedPosition));
     }
 
     private void renderMoveHighlights(Pane pane, String[][] moves, BoardPiece selected) {
