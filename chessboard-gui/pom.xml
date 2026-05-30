@@ -65,7 +65,7 @@
                                     </excludes>
                                 </filter>
                             </filters>
-                            <outputFile>${maven.multiModuleProjectDirectory}/target/${project.build.finalName}.jar</outputFile>
+                            <outputFile>${maven.multiModuleProjectDirectory}/target/fairy-chess.jar</outputFile>
                         </configuration>
                     </execution>
                 </executions>

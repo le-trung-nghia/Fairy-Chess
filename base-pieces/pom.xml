@@ -26,6 +26,7 @@
     </dependencies>
 
     <build>
+        <finalName>base-pieces</finalName>
         <plugins>
             <!-- Sets Pack-Name in manifest so PieceRegistry can identify this pack -->
             <plugin>
