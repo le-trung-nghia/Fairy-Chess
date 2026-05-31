@@ -1,4 +1,4 @@
-package com.chess.custompacks;
+package com.chess.custompieces;
 
 import com.chess.logic.boardregion.Ray;
 import com.chess.logic.state.BoardPiece;
