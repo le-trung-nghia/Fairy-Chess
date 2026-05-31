@@ -7,6 +7,7 @@ import com.chess.logic.types.Direction;
 import com.chess.logic.types.Piece;
 import com.chess.logic.types.Position;
 import com.chess.logic.types.Vector;
+import com.chess.registry.PiecePath;
 
 public class Pawn extends Piece {
     private boolean hasMoved = false;
@@ -19,6 +20,19 @@ public class Pawn extends Piece {
     @Override
     public String identifier() {
         return "pawn";
+    }
+
+    @Override
+    public PiecePath[] promotionOptions(GameState state, BoardPiece thisState) {
+        int backRank = thisState.color() == Color.WHITE ? 0 : 7;
+        if (thisState.position().row() == backRank)
+            return new PiecePath[]{
+                new PiecePath("base", "queen"),
+                new PiecePath("base", "rook"),
+                new PiecePath("base", "bishop"),
+                new PiecePath("base", "knight")
+            };
+        return null;
     }
 
     @Override
