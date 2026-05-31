@@ -1,5 +1,6 @@
 package com.chess.gui;
 
+import com.chess.gui.OverlayRenderer;
 import com.chess.logic.state.BoardPiece;
 import com.chess.logic.state.GameState;
 import com.chess.logic.state.PieceState;
@@ -53,7 +54,6 @@ public class App extends Application {
 
     //  Inner types 
 
-    /** One move in history; carries optional promotion metadata. */
     private static class MoveRecord {
         final Position from, to;
         String promotionPack  = null;  // null → no promotion this move
@@ -61,13 +61,12 @@ public class App extends Application {
         MoveRecord(Position from, Position to) { this.from = from; this.to = to; }
     }
 
-    /** A single piece placement used for the custom board layout. */
     private record BoardPlacement(
             String packName, String pieceName,
             com.chess.logic.types.Color color,
             int row, int col, boolean isKing) {}
 
-    //  Game state ─
+    //  Game state 
 
     private GameState logic;
     private Pane      boardPane;
@@ -84,19 +83,19 @@ public class App extends Application {
     private int      blackTimeSeconds;
     private Timeline gameTimer;
 
-    //  Registry & custom layout ─
+    //  Registry & custom layout 
 
     private final PieceRegistry registry = new PieceRegistry();
     /** null → use buildDefaultLayout() */
     private List<BoardPlacement> customBoardLayout = null;
 
-    //  Live UI handles (game scene) ─
+    //  Live UI handles (game scene) 
 
     private Label whiteTimerLabel, blackTimerLabel, turnLabel;
     private VBox  historyListBox;
     private Stage primaryStage;
 
-    //  Board-editor state ─
+    //  Board-editor state 
 
     private GameState          editorState;
     private final BoardPlacement[][] editorGrid = new BoardPlacement[8][8];
@@ -108,7 +107,7 @@ public class App extends Application {
     private Label editorStatusLabel;
     private VBox  editorPaletteBox;   // rebuilt on each selection change
 
-    //  JavaFX entry ─
+    //  JavaFX entry 
 
     @Override
     public void start(Stage stage) {
@@ -122,7 +121,7 @@ public class App extends Application {
         stage.show();
     }
 
-    //  Pack loading ─
+    //  Pack loading 
 
     /**
      * Scans the packs directory and registers every JAR found there.
@@ -175,7 +174,7 @@ public class App extends Application {
         }
     }
 
-    //  Scene navigation ─
+    //  Scene navigation 
 
     private void showMenuScene() {
         Text logo = new Text("FAIRY CHESS");
@@ -216,7 +215,7 @@ public class App extends Application {
         primaryStage.setScene(new Scene(root, WINDOW_W, WINDOW_H));
     }
 
-    //  Settings scene ─
+    //  Settings scene 
 
     private void showSettingsScene() {
         Text title = new Text("Settings");
@@ -235,7 +234,7 @@ public class App extends Application {
         primaryStage.setScene(new Scene(root, WINDOW_W, WINDOW_H));
     }
 
-    //  Board editor (Settings) ─
+    //  Board editor (Settings) 
 
     private void showBoardEditorScene() {
         initEditor();
@@ -601,7 +600,7 @@ public class App extends Application {
         return sidebar;
     }
 
-    //  Timer ─
+    //  Timer 
 
     private void startGameTimer() {
         gameTimer = new Timeline(new KeyFrame(Duration.seconds(1), e -> tickTimer()));
@@ -697,7 +696,7 @@ public class App extends Application {
         return "" + (char) ('a' + p.col()) + (8 - p.row());
     }
 
-    //  Board rendering ─
+    //  Board rendering 
 
     private void renderBoard(Pane pane, GameState state) {
         ImageView bg = new ImageView(new Image(Objects.requireNonNull(
@@ -719,9 +718,6 @@ public class App extends Application {
             }
         }
 
-        if (!inReplay && selectedPosition != null && validMoves != null)
-            renderMoveHighlights(pane, validMoves);
-
         for (int row = 0; row < 8; row++) {
             for (int col = 0; col < 8; col++) {
                 BoardPiece piece = state.getSquare(new Position(row, col));
@@ -733,31 +729,68 @@ public class App extends Application {
                 }
             }
         }
+
+        // Highlights rendered last so they appear on top of piece images
+        if (!inReplay && selectedPosition != null && validMoves != null)
+            renderMoveHighlights(pane, validMoves, state.getSquare(selectedPosition));
     }
 
-    private void renderMoveHighlights(Pane pane, String[][] moves) {
+    private void renderMoveHighlights(Pane pane, String[][] moves, BoardPiece selected) {
         for (int row = 0; row < 8; row++) {
             for (int col = 0; col < 8; col++) {
                 if (moves[row][col] == null) continue;
+                String iconName = moves[row][col];
                 double x = col * SQUARE_SIZE, y = row * SQUARE_SIZE;
 
-                if (moves[row][col].equals("attack.png")) {
-                    Rectangle ring = new Rectangle(x, y, SQUARE_SIZE, SQUARE_SIZE);
-                    ring.setFill(Color.TRANSPARENT);
-                    ring.setStroke(Color.color(0.85, 0.1, 0.1, 0.8));
-                    ring.setStrokeWidth(5);
-                    ring.setMouseTransparent(true);
-                    pane.getChildren().add(ring);
-                } else {
-                    Circle dot = new Circle(
-                            x + SQUARE_SIZE / 2.0, y + SQUARE_SIZE / 2.0, SQUARE_SIZE / 4.5);
-                    dot.setFill(Color.color(0.1, 0.1, 0.1, 0.35));
-                    dot.setMouseTransparent(true);
-                    pane.getChildren().add(dot);
+                // Priority 1 — image file provided in the piece's own JAR
+                InputStream imgStream = selected != null ? selected.resourceStream(iconName) : null;
+                if (imgStream != null) {
+                    ImageView iv = new ImageView(new Image(imgStream));
+                    iv.setX(x);
+                    iv.setY(y);
+                    iv.setFitWidth(SQUARE_SIZE);
+                    iv.setFitHeight(SQUARE_SIZE);
+                    iv.setMouseTransparent(true);
+                    pane.getChildren().add(iv);
+                    continue;
+                }
+
+                // Priority 2 — piece overrides OverlayRenderer with custom JavaFX code
+                if (selected != null && selected.piece() instanceof OverlayRenderer r) {
+                    switch (iconName) {
+                        case "move.png"   -> r.renderMoveOverlay(pane, x, y, SQUARE_SIZE);
+                        case "attack.png" -> r.renderAttackOverlay(pane, x, y, SQUARE_SIZE);
+                        default -> throw new IllegalStateException(
+                                "Unknown overlay iconName '%s' — use move.png or attack.png."
+                                        .formatted(iconName));
+                    }
+                    continue;
+                }
+
+                // Priority 3 — default built-in shapes
+                switch (iconName) {
+                    case "move.png" -> {
+                        Circle dot = new Circle(x + SQUARE_SIZE / 2.0, y + SQUARE_SIZE / 2.0, SQUARE_SIZE / 4.5);
+                        dot.setFill(Color.color(0.1, 0.1, 0.1, 0.35));
+                        dot.setMouseTransparent(true);
+                        pane.getChildren().add(dot);
+                    }
+                    case "attack.png" -> {
+                        Rectangle ring = new Rectangle(x, y, SQUARE_SIZE, SQUARE_SIZE);
+                        ring.setFill(Color.TRANSPARENT);
+                        ring.setStroke(Color.color(0.85, 0.1, 0.1, 0.8));
+                        ring.setStrokeWidth(5);
+                        ring.setMouseTransparent(true);
+                        pane.getChildren().add(ring);
+                    }
+                    default -> throw new IllegalStateException(
+                            "Unknown overlay iconName '%s' — use move.png or attack.png."
+                                    .formatted(iconName));
                 }
             }
         }
     }
+
 
     private void addPieceToPane(Pane pane, BoardPiece piece, int row, int col, boolean dim) {
         InputStream stream = piece.iconStream();
@@ -943,7 +976,7 @@ public class App extends Application {
         refreshTimerUI();
     }
 
-    //  Board setup ─
+    //  Board setup 
 
     private void setupBoard(GameState state) {
         List<BoardPlacement> layout =

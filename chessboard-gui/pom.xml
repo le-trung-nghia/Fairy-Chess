@@ -4,15 +4,11 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.chess</groupId>
     <artifactId>chessboard-gui</artifactId>
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.release>25</maven.compiler.release>
-    </properties>
 
     <parent>
         <groupId>com.chess</groupId>
         <artifactId>chessboard</artifactId>
-        <version>0.0.1-SNAPSHOT</version>
+        <version>1.0.0</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -21,7 +17,6 @@
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-controls</artifactId>
         </dependency>
-
         <dependency>
             <groupId>com.chess</groupId>
             <artifactId>chessboard-logic</artifactId>
@@ -30,7 +25,7 @@
 
     <build>
         <plugins>
-            <!-- Dev/test: mvn javafx:run  (runs from classes, no fat JAR needed) -->
+            <!-- Dev/test: mvn javafx:run -->
             <plugin>
                 <groupId>org.openjfx</groupId>
                 <artifactId>javafx-maven-plugin</artifactId>
@@ -40,7 +35,7 @@
                 </configuration>
             </plugin>
 
-            <!-- Delivery: mvn package  → root/target/chessboard-gui-*.jar (fat JAR) -->
+            <!-- Delivery: mvn package → root/target/chessboard-gui-*.jar (fat JAR) -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
@@ -55,13 +50,11 @@
                             <transformers>
                                 <transformer
                                     implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
-
                                 <transformer
                                     implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
                                     <mainClass>com.chess.gui.MainLauncher</mainClass>
                                 </transformer>
                             </transformers>
-
                             <filters>
                                 <filter>
                                     <artifact>*:*</artifact>
@@ -72,9 +65,7 @@
                                     </excludes>
                                 </filter>
                             </filters>
-
-                            <outputFile>
-                                ${maven.multiModuleProjectDirectory}/target/${project.build.finalName}.jar</outputFile>
+                            <outputFile>${maven.multiModuleProjectDirectory}/target/fairy-chess.jar</outputFile>
                         </configuration>
                     </execution>
                 </executions>

@@ -1,3 +1,26 @@
-Run `mvn clean package` to build the project.
+# Fairy Chess
 
-Run `java -jar ./target/chessboard-gui-0.0.1-SNAPSHOT.jar` to run the project after building it.
+A modular JavaFX chess game that supports custom piece packs via a plugin system.
+
+## Building
+
+```bash
+mvn clean package
+```
+
+Produces:
+- `target/fairy-chess.jar` — the game (fat JAR, run directly)
+- `target/packs/base-pieces.jar` — the built-in piece pack
+
+## Running
+
+```bash
+java -jar target/fairy-chess.jar
+```
+
+## Modding
+
+Create your own piece pack and drop the JAR into the `packs/` folder next to the game.
+
+**Modding example & template:**
+https://github.com/le-trung-nghia/Fairy-Chess-Modding
