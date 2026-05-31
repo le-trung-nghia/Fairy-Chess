@@ -7,6 +7,7 @@ import com.chess.logic.types.Direction;
 import com.chess.logic.types.Piece;
 import com.chess.logic.types.Position;
 import com.chess.logic.types.Vector;
+import com.chess.registry.PiecePath;
 
 public class Pawn extends Piece {
     private boolean hasMoved = false;
@@ -19,6 +20,19 @@ public class Pawn extends Piece {
     @Override
     public String identifier() {
         return "pawn";
+    }
+
+    @Override
+    public PiecePath[] promotionOptions(GameState state, BoardPiece thisState) {
+        int backRank = thisState.color() == Color.WHITE ? 0 : 7;
+        if (thisState.position().row() == backRank)
+            return new PiecePath[]{
+                new PiecePath("base", "queen"),
+                new PiecePath("base", "rook"),
+                new PiecePath("base", "bishop"),
+                new PiecePath("base", "knight")
+            };
+        return null;
     }
 
     @Override
@@ -35,27 +49,36 @@ public class Pawn extends Piece {
     public String[][] getMovableSquares(GameState state, BoardPiece thisState) {
         String[][] moves = new String[8][8];
         Direction forward = thisState.color().forwardDirection();
-        Vector fwd = forward.unitVector();
+        Vector    origin  = thisState.position().toVector();
+        Vector    fwd     = forward.unitVector();
 
         // One step forward
-        Position oneStep = thisState.position().add(fwd);
-        if (state.getSquare(oneStep) == null) {
-            moves[oneStep.row()][oneStep.col()] = ".png";
+        Vector v1 = origin.add(fwd);
+        if (v1.isInBounds()) {
+            Position oneStep = v1.toPosition();
+            if (state.getSquare(oneStep) == null) {
+                moves[oneStep.row()][oneStep.col()] = "move.png";
 
-            // Two steps forward
-            if (!hasMoved) {
-                Position twoSteps = thisState.position().add(fwd.mul(2));
-                if (state.getSquare(twoSteps) == null) {
-                    moves[twoSteps.row()][twoSteps.col()] = ".png";
+                // Two steps forward (only from starting position)
+                if (!hasMoved) {
+                    Vector v2 = origin.add(fwd.mul(2));
+                    if (v2.isInBounds()) {
+                        Position twoSteps = v2.toPosition();
+                        if (state.getSquare(twoSteps) == null) {
+                            moves[twoSteps.row()][twoSteps.col()] = "move.png";
+                        }
+                    }
                 }
             }
         }
 
-        // Captures
+        // Diagonal captures — must bounds-check before constructing Position
         for (Direction diag : new Direction[] { forward.skewLeft(), forward.skewRight() }) {
-            Position capturePos = thisState.position().add(diag.unitVector());
+            Vector vc = origin.add(diag.unitVector());
+            if (!vc.isInBounds()) continue;          // off the board (col a or col h)
+            Position capturePos = vc.toPosition();
             if (state.hasEnemy(capturePos, thisState.color())) {
-                moves[capturePos.row()][capturePos.col()] = ".png";
+                moves[capturePos.row()][capturePos.col()] = "attack.png";
             }
         }
 

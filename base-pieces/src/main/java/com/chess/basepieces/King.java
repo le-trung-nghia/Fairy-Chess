@@ -17,6 +17,9 @@ public class King extends Piece {
     }
 
     @Override
+    public com.chess.registry.PiecePath[] promotionOptions(GameState state, BoardPiece thisState) { return null; }
+
+    @Override
     public String identifier() {
         return "king";
     }
@@ -42,10 +45,12 @@ public class King extends Piece {
         BoardRegion movableRegion = new Rectangle(thisState.position().saturatingSub(new Vector(1, 1)),
                 thisState.position().saturatingAdd(new Vector(1, 1))).difference(thisState.position());
         for (Position square : movableRegion) {
-            if (state.hasEnemy(thisState.position(), thisState.color())) {
-                movableSquares[square.row()][square.col()] = "attack.png";
-            } else {
+            BoardPiece currentPiece = state.getSquare(square);
+
+            if (currentPiece == null) {
                 movableSquares[square.row()][square.col()] = "move.png";
+            } else if (thisState.color() != currentPiece.color()) {
+                movableSquares[square.row()][square.col()] = "attack.png";
             }
         }
         return movableSquares;

@@ -22,8 +22,11 @@ public class Bishop extends Piece {
     }
 
     @Override
+    public com.chess.registry.PiecePath[] promotionOptions(GameState state, BoardPiece thisState) { return null; }
+
+    @Override
     public String identifier() {
-        return "Bishop";
+        return "bishop";
     }
 
     @Override
@@ -46,10 +49,10 @@ public class Bishop extends Piece {
                 BoardPiece curr = state.getSquare(pos);
 
                 if (curr == null) {
-                    moves[pos.row()][pos.col()] = ".png";
+                    moves[pos.row()][pos.col()] = "move.png";
                 } else {
                     if (curr.color() != thisState.color()) {
-                        moves[pos.row()][pos.col()] = ".png";
+                        moves[pos.row()][pos.col()] = "attack.png";
                     }
                     break;
                 }

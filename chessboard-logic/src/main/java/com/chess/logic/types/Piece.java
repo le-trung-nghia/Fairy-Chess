@@ -2,6 +2,7 @@ package com.chess.logic.types;
 
 import com.chess.logic.state.BoardPiece;
 import com.chess.logic.state.GameState;
+import com.chess.registry.PiecePath;
 
 // Implementation of a piece
 public abstract class Piece {
@@ -22,11 +23,16 @@ public abstract class Piece {
     public abstract void onMoveCommand(GameState gameState, BoardPiece thisState, Position to);
 
     // get the squares this piece can move to
-    // returns a 2D array of Strings that are filenames of images that should be
-    // overlaid on the movable squares
+    // returns a 2D array of marker strings overlaid on movable squares
     // array can contain nulls to indicate that the corresponding square cannot be
     // moved to
     public abstract String[][] getMovableSquares(GameState state, BoardPiece thisState);
+
+    // return the pieces this piece can promote to after a move, or null if no promotion
+    // each PiecePath specifies the pack and piece name to promote to
+    // called by the GUI after every move — return null for pieces that never promote
+    public abstract PiecePath[] promotionOptions(GameState state, BoardPiece thisState);
+
 
     // called when this piece is displaced by another piece
     // thisState contains this piece's position after the displacement
