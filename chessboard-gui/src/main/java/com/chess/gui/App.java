@@ -828,15 +828,16 @@ public class App extends Application {
                     updateHistoryList();
                     refreshTimerUI();
 
-                    // Check for pawn promotion
+                    // Check for promotion — delegated to the piece itself
                     BoardPiece moved = logic.getSquare(clicked);
-                    if (moved != null && moved.icon().contains("pawn")) {
-                        int backRank = (movingColor == com.chess.logic.types.Color.WHITE) ? 0 : 7;
-                        if (clicked.row() == backRank) {
+                    if (moved != null) {
+                        com.chess.registry.PiecePath[] options =
+                                moved.piece().promotionOptions(logic, moved);
+                        if (options != null && options.length > 0) {
                             selectedPosition = null;
                             validMoves       = null;
                             redrawBoard();
-                            showPromotionOverlay(clicked, movingColor, rec);
+                            showPromotionOverlay(clicked, movingColor, rec, options);
                             return;
                         }
                     }
@@ -904,23 +905,22 @@ public class App extends Application {
     //  Pawn promotion 
 
     private void showPromotionOverlay(Position pos,
-            com.chess.logic.types.Color color, MoveRecord rec) {
+            com.chess.logic.types.Color color, MoveRecord rec,
+            com.chess.registry.PiecePath[] options) {
         if (gameTimer != null) gameTimer.stop();
-
-        String[] choices = {"queen", "rook", "bishop", "knight"};
 
         Rectangle dim = new Rectangle(0, 0, BOARD_PX, BOARD_PX);
         dim.setFill(Color.color(0, 0, 0, 0.72));
 
-        Text title = new Text("Promote pawn");
+        Text title = new Text("Promote");
         title.setFont(Font.font("Arial", FontWeight.BOLD, 22));
         title.setFill(Color.WHITE);
 
         HBox choiceRow = new HBox(10);
         choiceRow.setAlignment(Pos.CENTER);
 
-        for (String choice : choices) {
-            Image img = loadPieceImage("base", choice, color);
+        for (com.chess.registry.PiecePath option : options) {
+            Image img = loadPieceImage(option.packName(), option.pieceName(), color);
             StackPane cell = new StackPane();
             cell.setPrefSize(90, 90);
             if (img != null) {
@@ -930,7 +930,7 @@ public class App extends Application {
                 iv.setSmooth(true);
                 cell.getChildren().add(iv);
             } else {
-                cell.getChildren().add(new Text(choice));
+                cell.getChildren().add(new Text(option.pieceName()));
             }
             cell.setStyle("-fx-background-color: #3a3a3a; -fx-border-color: #555;" +
                     "-fx-border-width: 2; -fx-cursor: hand;");
@@ -940,8 +940,8 @@ public class App extends Application {
             cell.setOnMouseExited(e ->
                     cell.setStyle("-fx-background-color: #3a3a3a; -fx-border-color: #555;" +
                             "-fx-border-width: 2; -fx-cursor: hand;"));
-            final String chosen = choice;
-            cell.setOnMouseClicked(e -> applyPromotion(pos, color, "base", chosen, rec));
+            cell.setOnMouseClicked(e ->
+                    applyPromotion(pos, color, option.packName(), option.pieceName(), rec));
             choiceRow.getChildren().add(cell);
         }
 

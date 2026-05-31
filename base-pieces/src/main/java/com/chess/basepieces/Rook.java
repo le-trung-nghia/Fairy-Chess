@@ -19,6 +19,9 @@ public class Rook extends Piece {
     }
 
     @Override
+    public com.chess.registry.PiecePath[] promotionOptions(GameState state, BoardPiece thisState) { return null; }
+
+    @Override
     public String identifier() {
         return "rook";
     }
