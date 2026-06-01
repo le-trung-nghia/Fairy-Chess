@@ -1,6 +1,5 @@
 package com.chess.gui;
 
-import com.chess.gui.OverlayRenderer;
 import com.chess.logic.state.BoardPiece;
 import com.chess.logic.state.GameState;
 import com.chess.logic.state.PieceState;
@@ -624,6 +623,22 @@ public class App extends Application {
         turnLabel.setStyle("-fx-text-fill: #f0c040; -fx-font-size: 13; -fx-font-weight: bold;");
     }
 
+    private void onKingCaptured(boolean whiteWins) {
+        if (gameTimer != null) gameTimer.stop();
+        refreshTimerUI();
+        turnLabel.setText(whiteWins ? "⬜  White wins!" : "⬛  Black wins!");
+        turnLabel.setStyle("-fx-text-fill: #f0c040; -fx-font-size: 13; -fx-font-weight: bold;");
+    }
+
+    private boolean hasKing(GameState state, com.chess.logic.types.Color color) {
+        for (int r = 0; r < 8; r++)
+            for (int c = 0; c < 8; c++) {
+                BoardPiece bp = state.getSquare(new Position(r, c));
+                if (bp != null && bp.isKing() && bp.color() == color) return true;
+            }
+        return false;
+    }
+
     private void refreshTimerUI() {
         boolean whiteTurn = logic.turnPlayer() == com.chess.logic.types.Color.WHITE;
         applyTimerStyle(whiteTimerLabel, whiteTurn);
@@ -755,19 +770,7 @@ public class App extends Application {
                     continue;
                 }
 
-                // Priority 2 — piece overrides OverlayRenderer with custom JavaFX code
-                if (selected != null && selected.piece() instanceof OverlayRenderer r) {
-                    switch (iconName) {
-                        case "move.png"   -> r.renderMoveOverlay(pane, x, y, SQUARE_SIZE);
-                        case "attack.png" -> r.renderAttackOverlay(pane, x, y, SQUARE_SIZE);
-                        default -> throw new IllegalStateException(
-                                "Unknown overlay iconName '%s' — use move.png or attack.png."
-                                        .formatted(iconName));
-                    }
-                    continue;
-                }
-
-                // Priority 3 — default built-in shapes
+                // Fallback — default built-in shapes
                 switch (iconName) {
                     case "move.png" -> {
                         Circle dot = new Circle(x + SQUARE_SIZE / 2.0, y + SQUARE_SIZE / 2.0, SQUARE_SIZE / 4.5);
@@ -827,6 +830,16 @@ public class App extends Application {
                     viewIndex = moveHistory.size();
                     updateHistoryList();
                     refreshTimerUI();
+
+                    // Check if a king was captured — losing condition
+                    if (!hasKing(logic, com.chess.logic.types.Color.WHITE)) {
+                        selectedPosition = null; validMoves = null;
+                        redrawBoard(); onKingCaptured(false); return;
+                    }
+                    if (!hasKing(logic, com.chess.logic.types.Color.BLACK)) {
+                        selectedPosition = null; validMoves = null;
+                        redrawBoard(); onKingCaptured(true); return;
+                    }
 
                     // Check for promotion — delegated to the piece itself
                     BoardPiece moved = logic.getSquare(clicked);
