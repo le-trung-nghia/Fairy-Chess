@@ -9,7 +9,7 @@ public class PieceState {
     private Color color;
     private Position position;
 
-    public PieceState(boolean isKing, Color color, Position position) {
+    public PieceState(Color color, Position position) {
         this.color = Objects.requireNonNull(color);
         this.position = Objects.requireNonNull(position);
     }
