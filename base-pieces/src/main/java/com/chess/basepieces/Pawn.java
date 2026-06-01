@@ -18,6 +18,11 @@ public class Pawn extends Piece {
     }
 
     @Override
+    public boolean isKing() {
+        return false;
+    }
+
+    @Override
     public String identifier() {
         return "pawn";
     }
@@ -49,8 +54,8 @@ public class Pawn extends Piece {
     public String[][] getMovableSquares(GameState state, BoardPiece thisState) {
         String[][] moves = new String[8][8];
         Direction forward = thisState.color().forwardDirection();
-        Vector    origin  = thisState.position().toVector();
-        Vector    fwd     = forward.unitVector();
+        Vector origin = thisState.position().toVector();
+        Vector fwd = forward.unitVector();
 
         // One step forward
         Vector v1 = origin.add(fwd);
@@ -75,7 +80,8 @@ public class Pawn extends Piece {
         // Diagonal captures — must bounds-check before constructing Position
         for (Direction diag : new Direction[] { forward.skewLeft(), forward.skewRight() }) {
             Vector vc = origin.add(diag.unitVector());
-            if (!vc.isInBounds()) continue;          // off the board (col a or col h)
+            if (!vc.isInBounds())
+                continue; // off the board (col a or col h)
             Position capturePos = vc.toPosition();
             if (state.hasEnemy(capturePos, thisState.color())) {
                 moves[capturePos.row()][capturePos.col()] = "attack.png";

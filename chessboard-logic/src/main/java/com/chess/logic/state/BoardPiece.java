@@ -39,13 +39,8 @@ public class BoardPiece {
         piece.onColorChange(state, this);
     }
 
-    void changeKingStatus(GameState state, boolean isKing) {
-        this.state.setKingStatus(isKing);
-        piece.onKingStatusChange(state, this);
-    }
-
     public boolean isKing() {
-        return this.state.isKing();
+        return piece.isKing();
     }
 
     public Color color() {

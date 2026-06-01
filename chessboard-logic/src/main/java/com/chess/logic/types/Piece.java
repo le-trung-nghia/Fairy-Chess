@@ -13,6 +13,9 @@ public abstract class Piece {
     public void onInit(BoardPiece thisState) {
     }
 
+    // return whether this piece is a king piece
+    public abstract boolean isKing();
+
     // return the path to the icon for the piece
     public abstract String icon(BoardPiece thisState);
 
@@ -28,11 +31,12 @@ public abstract class Piece {
     // moved to
     public abstract String[][] getMovableSquares(GameState state, BoardPiece thisState);
 
-    // return the pieces this piece can promote to after a move, or null if no promotion
+    // return the pieces this piece can promote to after a move, or null if no
+    // promotion
     // each PiecePath specifies the pack and piece name to promote to
-    // called by the GUI after every move — return null for pieces that never promote
+    // called by the GUI after every move — return null for pieces that never
+    // promote
     public abstract PiecePath[] promotionOptions(GameState state, BoardPiece thisState);
-
 
     // called when this piece is displaced by another piece
     // thisState contains this piece's position after the displacement
