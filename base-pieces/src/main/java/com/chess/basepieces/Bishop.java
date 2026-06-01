@@ -17,12 +17,19 @@ public class Bishop extends Piece {
     };
 
     @Override
+    public boolean isKing() {
+        return false;
+    }
+
+    @Override
     public String icon(BoardPiece thisState) {
         return thisState.color() == Color.BLACK ? "black_bishop.png" : "white_bishop.png";
     }
 
     @Override
-    public com.chess.registry.PiecePath[] promotionOptions(GameState state, BoardPiece thisState) { return null; }
+    public com.chess.registry.PiecePath[] promotionOptions(GameState state, BoardPiece thisState) {
+        return null;
+    }
 
     @Override
     public String identifier() {

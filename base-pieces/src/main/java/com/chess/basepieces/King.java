@@ -17,7 +17,14 @@ public class King extends Piece {
     }
 
     @Override
-    public com.chess.registry.PiecePath[] promotionOptions(GameState state, BoardPiece thisState) { return null; }
+    public com.chess.registry.PiecePath[] promotionOptions(GameState state, BoardPiece thisState) {
+        return null;
+    }
+
+    @Override
+    public boolean isKing() {
+        return true;
+    }
 
     @Override
     public String identifier() {
