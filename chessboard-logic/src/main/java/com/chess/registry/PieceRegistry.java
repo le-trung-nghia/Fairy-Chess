@@ -82,7 +82,7 @@ public class PieceRegistry {
         }
     }
 
-    /** Returns pack → [pieceNames] for every registered pack, in insertion order. */
+    // Returns pack -> [pieceNames] for every registered pack, in insertion order.
     public Map<String, List<String>> listRegisteredPieces() {
         Map<String, List<String>> result = new LinkedHashMap<>();
         for (var entry : registry.entrySet()) {

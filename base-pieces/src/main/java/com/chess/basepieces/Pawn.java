@@ -31,12 +31,12 @@ public class Pawn extends Piece {
     public PiecePath[] promotionOptions(GameState state, BoardPiece thisState) {
         int backRank = thisState.color() == Color.WHITE ? 0 : 7;
         if (thisState.position().row() == backRank)
-            return new PiecePath[] {
-                    new PiecePath("base", "queen"),
-                    new PiecePath("base", "rook"),
-                    new PiecePath("base", "bishop"),
-                    new PiecePath("base", "knight")
-            };
+            return new PiecePath[]{
+                new PiecePath("base", "queen"),
+                new PiecePath("base", "rook"),
+                new PiecePath("base", "bishop"),
+                new PiecePath("base", "knight")
+        };
         return null;
     }
 
