@@ -31,7 +31,7 @@ public class Pawn extends Piece {
                 new PiecePath("base", "rook"),
                 new PiecePath("base", "bishop"),
                 new PiecePath("base", "knight")
-            };
+        };
         return null;
     }
 
