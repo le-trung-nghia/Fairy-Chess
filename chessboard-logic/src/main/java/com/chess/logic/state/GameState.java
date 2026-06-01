@@ -16,6 +16,8 @@ public class GameState {
     private Color turnPlayer = Color.WHITE;
     // captured pieces
     private ArrayList<BoardPiece> captured = new ArrayList<>();
+    // null = game in progress; non-null = that color won
+    private Color winner = null;
 
     // get the piece (or the lack of one) at a square on the board
     public BoardPiece getSquare(Position pos) {
@@ -38,7 +40,24 @@ public class GameState {
     public void commandMove(Position src, Position dst) {
         getSquare(src).commandMove(this, dst);
         turnNumber++;
+        checkKingPresence();
     }
+
+    private void checkKingPresence() {
+        boolean whiteHasKing = false, blackHasKing = false;
+        for (BoardPiece[] row : board)
+            for (BoardPiece bp : row)
+                if (bp != null && bp.isKing()) {
+                    if (bp.color() == Color.WHITE) whiteHasKing = true;
+                    else blackHasKing = true;
+                }
+        if (!whiteHasKing) winner = Color.BLACK;
+        else if (!blackHasKing) winner = Color.WHITE;
+    }
+
+    public boolean isGameOver() { return winner != null; }
+
+    public Color winner() { return winner; }
 
     public void place(Piece piece, PieceState state) {
         Position pos = state.position();

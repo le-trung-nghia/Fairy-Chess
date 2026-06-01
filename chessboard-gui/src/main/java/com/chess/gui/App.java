@@ -608,6 +608,11 @@ public class App extends Application {
     }
 
     private void tickTimer() {
+        if (logic.isGameOver()) {
+            gameTimer.stop();
+            onGameOver(logic.winner() == com.chess.logic.types.Color.WHITE);
+            return;
+        }
         boolean whiteTurn = logic.turnPlayer() == com.chess.logic.types.Color.WHITE;
         if (whiteTurn) {
             if (--whiteTimeSeconds <= 0) { whiteTimeSeconds = 0; gameTimer.stop(); onTimeout(false); return; }
@@ -623,20 +628,11 @@ public class App extends Application {
         turnLabel.setStyle("-fx-text-fill: #f0c040; -fx-font-size: 13; -fx-font-weight: bold;");
     }
 
-    private void onKingCaptured(boolean whiteWins) {
+    private void onGameOver(boolean whiteWins) {
         if (gameTimer != null) gameTimer.stop();
         refreshTimerUI();
         turnLabel.setText(whiteWins ? "⬜  White wins!" : "⬛  Black wins!");
         turnLabel.setStyle("-fx-text-fill: #f0c040; -fx-font-size: 13; -fx-font-weight: bold;");
-    }
-
-    private boolean hasKing(GameState state, com.chess.logic.types.Color color) {
-        for (int r = 0; r < 8; r++)
-            for (int c = 0; c < 8; c++) {
-                BoardPiece bp = state.getSquare(new Position(r, c));
-                if (bp != null && bp.isKing() && bp.color() == color) return true;
-            }
-        return false;
     }
 
     private void refreshTimerUI() {
@@ -831,14 +827,12 @@ public class App extends Application {
                     updateHistoryList();
                     refreshTimerUI();
 
-                    // Check if a king was captured — losing condition
-                    if (!hasKing(logic, com.chess.logic.types.Color.WHITE)) {
+                    // Check if the game ended (king captured)
+                    if (logic.isGameOver()) {
                         selectedPosition = null; validMoves = null;
-                        redrawBoard(); onKingCaptured(false); return;
-                    }
-                    if (!hasKing(logic, com.chess.logic.types.Color.BLACK)) {
-                        selectedPosition = null; validMoves = null;
-                        redrawBoard(); onKingCaptured(true); return;
+                        redrawBoard();
+                        onGameOver(logic.winner() == com.chess.logic.types.Color.WHITE);
+                        return;
                     }
 
                     // Check for promotion — delegated to the piece itself
