@@ -14,8 +14,6 @@ public class GameState {
     private BoardPiece[][] board = new BoardPiece[8][8];
     private int turnNumber = 1;
     private Color turnPlayer = Color.WHITE;
-    // captured pieces
-    private ArrayList<BoardPiece> captured = new ArrayList<>();
     // null = game in progress; non-null = that color won
     private Color winner = null;
 
@@ -48,16 +46,24 @@ public class GameState {
         for (BoardPiece[] row : board)
             for (BoardPiece bp : row)
                 if (bp != null && bp.isKing()) {
-                    if (bp.color() == Color.WHITE) whiteHasKing = true;
-                    else blackHasKing = true;
+                    if (bp.color() == Color.WHITE)
+                        whiteHasKing = true;
+                    else
+                        blackHasKing = true;
                 }
-        if (!whiteHasKing) winner = Color.BLACK;
-        else if (!blackHasKing) winner = Color.WHITE;
+        if (!whiteHasKing)
+            winner = Color.BLACK;
+        else if (!blackHasKing)
+            winner = Color.WHITE;
     }
 
-    public boolean isGameOver() { return winner != null; }
+    public boolean isGameOver() {
+        return winner != null;
+    }
 
-    public Color winner() { return winner; }
+    public Color winner() {
+        return winner;
+    }
 
     public void place(Piece piece, PieceState state) {
         Position pos = state.position();
@@ -77,6 +83,7 @@ public class GameState {
                             .formatted(pos.row(), pos.col()));
         }
         setSquare(pos, null);
+        checkKingPresence();
     }
 
     public int turnNumber() {
@@ -138,9 +145,12 @@ public class GameState {
     public void capture(Position pos) {
         Objects.requireNonNull(pos);
         BoardPiece piece = getSquare(pos);
-        captured.add(piece);
         setSquare(pos, null);
         piece.capture(this);
+        if (piece.isKing()) {
+            winner = turnPlayer;
+        }
+        checkKingPresence();
     }
 
     public boolean hasEnemy(Position pos, Color color) {
