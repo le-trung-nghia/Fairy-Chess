@@ -1,7 +1,7 @@
 # COMP1020 Final Project Team 8: Fairy Chess
 
 A modular JavaFX chess game that supports custom piece packs via a plugin system.
-This repository can be found on GitHub at <https://github.com/le-trung-nghia/Fairy-Chess/tree/main>.
+This repository can be found on GitHub at <https://github.com/le-trung-nghia/Fairy-Chess>.
 
 ## Building
 
